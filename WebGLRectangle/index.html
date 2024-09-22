@@ -5,8 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebGL 2D Rectangle</title>
 </head>
-<body>
-    <canvas id="glCanvas" width="600" height="400"></canvas>
+<body style="flex: auto;">
+    <canvas id="glCanvas" width="600" height="400" style="display: flex; margin: auto;"></canvas>
+    <div style="display: flex; margin: auto; max-width: 600px; justify-content: center;">
+        <button type="button" id="default" style="margin: 10px;">Default</button>
+        <button type="button" id="red" style="margin: 10px;">Red</button>
+        <button type="button" id="green" style="margin: 10px;">Green</button>
+        <button type="button" id="blue" style="margin: 10px;">Blue</button>
+    </div>
     <script type="module" src="./app.js"></script>
 </body>
 </html>

@@ -5,9 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebGL 2D Triangle</title>
 </head>
-<body>
-    <canvas id="glCanvas" width="600" height="400"></canvas>
+<body style="flex: auto;">
+    <canvas id="glCanvas" width="600" height="400" style="display: flex; margin: auto;"></canvas>
+    <div style="display: flex; margin: auto; max-width: 600px; justify-content: center;">
+        <button type="button" id="default" style="margin: 10px;">Default</button>
+        <button type="button" id="red" style="margin: 10px;">Red</button>
+        <button type="button" id="green" style="margin: 10px;">Green</button>
+        <button type="button" id="blue" style="margin: 10px;">Blue</button>
+    </div>
+    
     <script>
+        let def = document.getElementById("default");
+        let red = document.getElementById("red");
+        let green = document.getElementById("green");
+        let blue = document.getElementById("blue");
+
         // Get WebGL context of supported browser for HTML5
         function initWebGL(canvasId) {
             const canvas = document.getElementById(canvasId);
@@ -95,23 +107,16 @@
             gl.drawArrays(gl.TRIANGLES, 0, 3); // Draw triangle
         }
 
-        function main() {
+        function main(vertexShaderSource, fragmentShaderSource) {
             const gl = initWebGL('glCanvas'); // Get context from canvas
-
-            // Initialize vertex source and fragment source that will use for shader program
-            const vertexShaderSource = `
-                attribute vec2 a_position;
-                void main() {
-                    gl_Position = vec4(a_position, 0.0, 1.0);
-                }
-            `;
-
-            const fragmentShaderSource = `
+            def.addEventListener("click", function(){
+                fragmentShaderSource = `
                 precision mediump float;
                 void main() {
-                    gl_FragColor = vec4(0.5, 0.7, 1.0, 1.0); // (R, G, B, Opacity)
+                    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0); // (R, G, B, Opacity)
                 }
             `;
+            })
 
             // Create shader program through the createShader and createProgram function
             const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
@@ -130,7 +135,66 @@
             drawTriangle(gl, program);
         }
 
-        main();
+        // Initialize vertex source and fragment source that will use for shader program
+        const vertexShaderSource = `
+            attribute vec2 a_position;
+            void main() {
+                gl_Position = vec4(a_position, 0.0, 1.0);
+            }
+        `;
+
+        var fragmentShaderSource = `
+            precision mediump float;
+            void main() {
+                gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0); // (R, G, B, Opacity)
+            }
+        `;
+        // Onload init
+        main(vertexShaderSource, fragmentShaderSource);
+
+        def.addEventListener("click", function(){
+            // Change shape color
+            fragmentShaderSource = `
+                precision mediump float;
+                void main() {
+                    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0); // (R, G, B, Opacity)
+                }
+            `;
+            main(vertexShaderSource, fragmentShaderSource); // Reload the shape
+        })
+
+        red.addEventListener("click", function(){
+            // Change shape color
+            fragmentShaderSource = `
+                precision mediump float;
+                void main() {
+                    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0); // (R, G, B, Opacity)
+                }
+            `;
+            main(vertexShaderSource, fragmentShaderSource); // Reload the shape
+        })
+
+        green.addEventListener("click", function(){
+            // Change shape color
+            fragmentShaderSource = `
+                precision mediump float;
+                void main() {
+                    gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0); // (R, G, B, Opacity)
+                }
+            `;
+            main(vertexShaderSource, fragmentShaderSource); // Reload the shape
+        })
+
+        blue.addEventListener("click", function(){
+            // Change shape color
+            fragmentShaderSource = `
+                precision mediump float;
+                void main() {
+                    gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0); // (R, G, B, Opacity)
+                }
+            `;
+            main(vertexShaderSource, fragmentShaderSource);
+        })
     </script>
 </body>
 </html>

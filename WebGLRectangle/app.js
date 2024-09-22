@@ -1,23 +1,7 @@
 // Wait for the page to load
 window.onload = function() {
-    // Get the canvas element
-    const canvas = document.getElementById('glCanvas');
-    // Initialize the GL context
-    const gl = canvas.getContext('webgl');
-
-    // Only continue if WebGL is available and working
-    if (!gl) {
-        alert('Unable to initialize WebGL. Your browser may not support it.');
-        return;
-    }
-
-    // Set clear color to black, fully opaque
-    gl.clearColor(0.1, 0.1, 0.1, 1.0);
-    // Clear the color buffer with specified clear color
-    gl.clear(gl.COLOR_BUFFER_BIT);
-
     // Vertex shader program
-    const vsSource = `
+    const vssSource = `
         attribute vec4 aVertexPosition;
         void main() {
             gl_Position = aVertexPosition;
@@ -25,44 +9,107 @@ window.onload = function() {
     `;
 
     // Fragment shader program
-    const fsSource = `
+    var fssSource = `
         void main() {
             gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
         }
     `;
 
-    // Initialize a shader program
-    const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
+    function createShape(fsSource, vsSource){
+        // Get the canvas element
+        const canvas = document.getElementById('glCanvas');
+        // Initialize the GL context
+        const gl = canvas.getContext('webgl');
 
-    // Get the attribute location
-    const vertexPosition = gl.getAttribLocation(shaderProgram, 'aVertexPosition');
+        // Only continue if WebGL is available and working
+        if (!gl) {
+            alert('Unable to initialize WebGL. Your browser may not support it.');
+            return;
+        }
 
-    // Create a buffer for the rectangle's positions.
-    const positionBuffer = gl.createBuffer();
+        // Set clear color to black, fully opaque
+        gl.clearColor(0.5, 0.5, 0.5, 1.0);
+        // Clear the color buffer with specified clear color
+        gl.clear(gl.COLOR_BUFFER_BIT);
 
-    // Select the positionBuffer as the one to apply buffer operations to from here out
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+        // Initialize a shader program
+        const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
+    
+        // Get the attribute location
+        const vertexPosition = gl.getAttribLocation(shaderProgram, 'aVertexPosition');
+    
+        // Create a buffer for the rectangle's positions.
+        const positionBuffer = gl.createBuffer();
+    
+        // Select the positionBuffer as the one to apply buffer operations to from here out
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    
+        // Create an array of positions for the rectangle.
+        const positions = [
+            -0.7,  0.5,
+            0.7,  0.5,
+            -0.7, -0.5,
+            0.7, -0.5,
+        ];
+    
+        // Pass the list of positions into WebGL to build the shape
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+    
+        // Tell WebGL how to pull out the positions from the position buffer into the vertexPosition attribute
+        gl.vertexAttribPointer(vertexPosition, 2, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(vertexPosition);
+    
+        // Use our shader program
+        gl.useProgram(shaderProgram);
+    
+        // Draw the rectangle
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    }
+    
+    createShape(fssSource, vssSource);
 
-    // Create an array of positions for the rectangle.
-    const positions = [
-        -0.7,  0.5,
-         0.7,  0.5,
-        -0.7, -0.5,
-         0.7, -0.5,
-    ];
+    let def = document.getElementById("default");
+    let red = document.getElementById("red");
+    let green = document.getElementById("green");
+    let blue = document.getElementById("blue");
+    
+    def.addEventListener("click", function(){
+        fssSource = `
+            void main() {
+                gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+            }
+        `;
+        createShape(fssSource, vssSource);
+    });
 
-    // Pass the list of positions into WebGL to build the shape
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+    red.addEventListener("click", function(){
+        fssSource = `
+            void main() {
+                gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+            }
+        `;
+        createShape(fssSource, vssSource);
+    });
 
-    // Tell WebGL how to pull out the positions from the position buffer into the vertexPosition attribute
-    gl.vertexAttribPointer(vertexPosition, 2, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(vertexPosition);
+    green.addEventListener("click", function(){
+        fssSource = `
+            void main() {
+                gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+            }
+        `;
+        createShape(fssSource, vssSource);
+    });
 
-    // Use our shader program
-    gl.useProgram(shaderProgram);
+    blue.addEventListener("click", function(){
+        fssSource = `
+            void main() {
+                gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0);
+            }
+        `;
+        createShape(fssSource, vssSource);
+    });
+ 
 
-    // Draw the rectangle
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 }
 
 // Initialize a shader program, so WebGL knows how to draw our data
@@ -104,3 +151,5 @@ function loadShader(gl, type, source) {
 
     return shader;
 }
+
+
