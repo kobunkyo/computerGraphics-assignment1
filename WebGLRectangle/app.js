@@ -72,6 +72,7 @@ window.onload = function() {
     let red = document.getElementById("red");
     let green = document.getElementById("green");
     let blue = document.getElementById("blue");
+    let submit = document.getElementById("submit");
     
     def.addEventListener("click", function(){
         fssSource = `
@@ -108,7 +109,86 @@ window.onload = function() {
         `;
         createShape(fssSource, vssSource);
     });
- 
+    
+    // For hex code converter
+    function hexCodeDic(code){
+        if('a' <= code && code <= 'f'){
+            switch(code){
+                case 'a':
+                    return 10;
+                    break;
+
+                case 'b':
+                    return 11;
+                    break;
+
+                case 'c':
+                    return 12;
+                    break;
+
+                case 'd':
+                    return 13;
+                    break;
+
+                case 'e':
+                    return 14;
+                    break;
+
+                case 'f':
+                    return 15;
+                    break;
+            }
+        }else{
+            return parseInt(code); // Parsing a character in number to integer data type
+        }
+        
+    }
+    
+    submit.addEventListener("click", function(){
+        let hexCode = document.getElementById("color").value;
+        // For changing color RGB
+        let R = 0; 
+        let G = 0; 
+        let B = 0; 
+        for(let i = 1; i < 7; i++){
+            switch(i){
+                case 1:
+                    R += (16 * hexCodeDic(hexCode[i]));
+                    break;
+
+                case 2:
+                    R += hexCodeDic(hexCode[i]);
+                    break;
+
+                case 3:
+                    G += (16 * hexCodeDic(hexCode[i]));
+                    break;
+
+                case 4:
+                    G += hexCodeDic(hexCode[i]);
+                    break;
+
+                case 5:
+                    B += (16 * hexCodeDic(hexCode[i]));
+                    break;
+
+                case 6:
+                    B += hexCodeDic(hexCode[i]);
+                    break;
+            }
+        }
+        R = R/255;
+        G = G/255;
+        B = B/255;
+        
+        fssSource = `
+            void main() {
+                gl_FragColor = vec4(${R}, ${G}, ${B}, 1.0);
+            }
+        `;
+
+        createShape(fssSource, vssSource);
+    });
 
 }
 
